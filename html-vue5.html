@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name='viewport'
+        content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>VUE</title>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <textarea v-model="textarea" name="" id="" style="width: 100%;" cols="30" rows="10"></textarea>
+        </div>
+        <div>
+            <textarea v-model="showTextarea" name="" id="" style="width: 100%;" cols="30" rows="10"></textarea>
+        </div>
+        <button @click="arraySplitHandler">
+            []分割
+        </button>
+        <button @click="rowToJSON">
+            转换成JSON
+        </button>
+        <button @click="rowToUnique">
+            过滤重复数据行
+        </button>
+    </div>
+</body>
+<script type='text/javascript'>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                textarea: `The preview offers a unique opportunity to see the show without the crowds.
+预展提供了看展览但不挨挤的难得机会。
+The deal will put the company in a unique position to export goods to Eastern Europe.
+这项协议给予这家公司向东欧输出商品的特殊地位。`,
+                showTextarea: ''
+            }
+        },
+        methods: {
+            arraySplitHandler() {
+                let texts = this.textarea.split("\n");
+                texts = texts.filter(res => {
+                    return res !== '';
+                });
+                texts = texts.map(res => {
+                    res = res.replace(/"/g, '\\"');
+                    return `"${res}\\r",`;
+                });
+                this.showTextarea = texts.join("\n");
+            },
+            rowToUnique() {
+                let texts = this.textarea.split("\n");
+                texts = texts.filter(res => {
+                    return res !== '';
+                });
+                let sets = new Set();
+                for (let row of texts) {
+                    sets.add(row);
+                }
+                this.showTextarea = Array.from(sets).join("\n");;
+            },
+            rowToJSON() {
+                var sp = prompt("请输入Key/Value的分隔符", ":");
+
+                let texts = this.textarea.split("\n");
+                texts = texts.filter(res => {
+                    return res !== '';
+                });
+                let jsonObject = {};
+                for (let row of texts) {
+                    let rows = row.split(sp)
+                    let teamp = {};
+                    let teampStringify = "";
+                    try {
+                        teamp[rows[0]] = rows[1] || ''
+                        teampStringify = JSON.stringify(teamp);
+                    } catch (err) {
+
+                    }
+                    if (teampStringify) {
+                        jsonObject[rows[0]] = rows[1] || '';
+                    }
+                }
+                this.showTextarea = JSON.stringify(jsonObject);
+
+            }
+        }
+    })
+</script>
+
+</html>
